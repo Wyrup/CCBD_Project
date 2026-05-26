@@ -21,7 +21,7 @@ WORKDIR /opt
 RUN if [ -d /opt/CCBD_Project/.git ]; then \
         cd /opt/CCBD_Project && git pull; \
     else \
-        git clone https://github.com/TanguyGodat/CCBD_Project.git /opt/CCBD_Project; \
+        git clone https://github.com/Wyrup/CCBD_Project.git /opt/CCBD_Project; \
     fi
 
 WORKDIR /opt/CCBD_Project
