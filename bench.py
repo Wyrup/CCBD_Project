@@ -465,6 +465,7 @@ def main():
 
     parser_ = build_parser()
     args = parser_.parse_args()
+    visu.init()
 
     to_bench(args.dataset_id, args.bucket, args.endpoint_url, args.size, args.layout,
              args.generate_small, args.small_output_dir, args.rows_per_file, args.seed,

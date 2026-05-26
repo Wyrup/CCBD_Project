@@ -2,6 +2,10 @@ import matplotlib.pyplot as plt
 
 class Visualisation:
   def __init__(self):
+    self.fig, self.ax = plt.subplots(figsize=(10, 2))
+    self.left = 0
+
+  def init(self):
     # self.data = {}
     plt.ion() #activate the interactive mode
     self.fig, self.ax = plt.subplots(figsize=(10, 2))
