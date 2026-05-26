@@ -6,6 +6,9 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     python3-venv \
     procps \
+    python3-tk \
+    tk \
+    tcl \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL https://dl.min.io/server/minio/release/linux-amd64/minio -o /usr/local/bin/minio && \
@@ -18,7 +21,7 @@ WORKDIR /opt
 RUN if [ -d /opt/CCBD_Project/.git ]; then \
         cd /opt/CCBD_Project && git pull; \
     else \
-        git clone https://github.com/Wyrup/CCBD_Project.git /opt/CCBD_Project; \
+        git clone https://github.com/TanguyGodat/CCBD_Project.git /opt/CCBD_Project; \
     fi
 
 WORKDIR /opt/CCBD_Project
