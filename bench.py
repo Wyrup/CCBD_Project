@@ -18,6 +18,7 @@ from dataset_gen import SIZE_TO_ROWS, write_small_files
 from compact import compact_dataset, count_parquet_files
 from upload import upload_directory
 from download import download_prefix, list_objects
+from visualisation import visu
 
 
 def ensure_empty_dir(path, create_new= True):
@@ -206,6 +207,7 @@ def benchmark_one_layout(
         local_dir=local_source_dir,
         s3_prefix=s3_prefix,
     )
+    visu.update("upload", upload_elapsed)
 
     # listing
     listing_object_count, listing_total_bytes, listing_elapsed = measure_listing(
@@ -213,6 +215,7 @@ def benchmark_one_layout(
         bucket=bucket,
         prefix=s3_prefix,
     )
+    visu.update("listing", listing_elapsed)
 
     # query
     query_metrics = run_fixed_query_on_s3(
@@ -223,6 +226,7 @@ def benchmark_one_layout(
         start_ts=query_start,
         end_ts=query_end,
     )
+    visu.update("query", query_metrics["query_elapsed_s"])
 
     download_dir = os.path.join(download_base_dir, dataset_id, layout_name)
     ensure_empty_dir(download_dir)
@@ -234,6 +238,7 @@ def benchmark_one_layout(
         prefix=s3_prefix,
         local_dir=download_dir,
     )
+    visu.update("download", download_elapsed)
 
     upload_throughput_mb_s = (
         (upload_bytes / (1024 * 1024)) / upload_elapsed if upload_elapsed > 0 else 0.0
@@ -325,6 +330,7 @@ def to_bench(dataset_id: str, bucket: str, endpoint_url: str, size: int, layout_
             rows_per_file=rows_per_file,
             seed=seed
         )
+        visu.update("generation", generation_elapsed)
 
     if compact_from or compact_to:
         if not compact_from or not compact_to:
@@ -338,6 +344,7 @@ def to_bench(dataset_id: str, bucket: str, endpoint_url: str, size: int, layout_
             output_dir=compact_to,
             output_compact_ratio=compact_output_ratio
         )
+        visu.update("compact", compaction_elapsed)
 
     if not layout_:
         raise ValueError("Provide at least one --layout entry")
@@ -458,14 +465,15 @@ def main():
 
     parser_ = build_parser()
     args = parser_.parse_args()
-    
-    # print(f"args: {args}")
+
     to_bench(args.dataset_id, args.bucket, args.endpoint_url, args.size, args.layout,
              args.generate_small, args.small_output_dir, args.rows_per_file, args.seed,
              args.compact_from, args.compact_to, args.compact_output_ratio,
              args.region_name, args.access_key, args.secret_key, args.query_start,
              args.query_end, args.download_base_dir, args.query_region, args.cleanup_prefix,
              args.results_csv)
+
+    visu.end()
 
 
 if __name__ == "__main__":
